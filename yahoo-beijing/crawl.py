@@ -123,8 +123,28 @@ def get_user_love_photo_id(user_id):
     return photo_list
 
 def get_user_love_photo_id_all(user_dict  ,photo_dict):
+    
+    pos = 0
     for each_user in user_dict:
         user_dict[each_user].favimg = set ( get_user_love_photo_id(each_user) )
+        
+        for each_photo_id in user_dict[each_user].favimg:
+            if each_photo_id not in photo_dict:
+                yql_function.get_photo_info_by_url(each_photo_id , photo_dict)
+        if pos % 1000 == 0:
+            print pos 
+        if pos >= 3000 :
+            continue
+        pos = pos +1
+ 
+def get_photo_source(photo_dict ,user_dict):
+    
+    for each_photo in photo_dict :
+        yql_function.get_photo_info_by_url(each_photo , photo_dict)  
+    for each_user in user_dict :
+        favimg = user_dict[each_user].favimg   
+        for each in favimg:
+            yql_function.get_photo_info_by_url(each , photo_dict)          
 def main():
     user_dict = {}
     
@@ -155,6 +175,9 @@ def user_main():
     get_dict(user_dict, photo_dict)
     
     get_user_love_photo_id_all(user_dict ,photo_dict)
+    
+    get_user_love_photo_id_all(user_dict  ,photo_dict)
+    
     store_dict(user_dict ,photo_dict)
     
 

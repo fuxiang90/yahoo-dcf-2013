@@ -174,8 +174,36 @@ def get_taginfo_by_photo_id_all(user_dict ,photo_dict):
             if tag_name not in user_dict[user_id].taginfo:
                 user_dict[user_id].taginfo[tag_name] = 0
             user_dict[user_id].taginfo[tag_name] = user_dict[user_id].taginfo[tag_name] + 1
-                 
-      
+
+"""
+用url的方式得到
+http://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=ce066b8ce6f18f84143bded95a3a4f8a&photo_id=8670010354&format=json&nojsoncallback=1
+"""
+def get_photo_info_by_url(photo_id ,photo_dict):
+    
+    if photo_id in photo_dict and  photo_dict[photo_id].source != "":
+        return 
+    photo_dict[photo_id] = photo.photoData()
+    
+    photo_dict[photo_id].id  =  photo_id
+    
+    query_str =   'http://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=' + api_key +'&photo_id=' +photo_id +'&format=json&nojsoncallback=1'
+#     print query_str
+    html = urllib2.urlopen(query_str).read()
+#     print html
+    json_html = json.loads(html)
+
+#     print json_html
+    photo_dict[photo_id].title =  json_html['photo']['title']['_content']
+#    
+    query_str2 = 'http://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key='+api_key+'&photo_id='+photo_id +'&format=json&nojsoncallback=1'
+    html = urllib2.urlopen(query_str2).read()
+#     print html
+    json_html = json.loads(html) 
+    
+    photo_dict[photo_id].source = json_html['sizes']['size'][1]['source']
+    photo_dict[photo_id].width = 150
+    photo_dict[photo_id].heigth = 150
 if __name__  == '__main__':
     
     d = {}
@@ -184,6 +212,8 @@ if __name__  == '__main__':
 #     get_json_flickr_yal_all(d)
 #     get_json_groub_user_id_all(d)
 #     get_photo_id_by_user_id('68701427@N05')
+
+    get_photo_info_by_url('8670010354',d)
     dd = get_taginfo_by_photo_id("8717078981")
    
     print type(dd[0]['tags'] )

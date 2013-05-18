@@ -8,7 +8,7 @@ class photoData(object):
         
         self.id = 0
         self.subject = {}
-        self.taginfo = {}
+        self.taginfo = {} # tag : user 
         self.width = 0
         self.height = 0
         self.source = ""

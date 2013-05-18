@@ -29,7 +29,7 @@ def get_url_photo_id(url_str):
     """
     "http://www.flickr.com/photos/63028919@N07/8731761170/sizes/t/"
     """
-    print url_str
+#     print url_str
                
     pattern = re.compile(r'(^<=[/]).*?(?=[/sizes])')#.*\/(\d*)\/size') 
     
@@ -67,7 +67,7 @@ def get_json_groub_user_id(groub_str):
     y = yql.Public() 
     l = y.execute(query_str , {"groub":groub_str ,"api_key":api_key})
     
-    print l.rows
+#     print l.rows
     return l.rows        
 
 def get_json_groub_user_id_all(user_dict):
@@ -118,16 +118,56 @@ def get_taginfo_by_photo_id(photoid):
 """
 def get_taginfo_by_photo_id_all(user_dict ,photo_dict):
     
+    ###debug
+    
+#     photo_dict['8714694455'] = photo.photoData()
+#     photo_dict['8714694455'].id = "8714694455"
+#     
+#     photo_dict['8747460606'] = photo.photoData()
+#     photo_dict['8747460606'].id = "8747460606"
+ 
+    ### end debug
+    
     for photo_id in photo_dict:
         d = get_taginfo_by_photo_id(photo_id)
+#         print photo_id
+        if len(d[0]) == 0 :
+            continue
+        if type(d[0]['tags']) is None :
+            continue
+#         print d[0]
+#         print d[0]['tags']
+        
+        if isinstance(d[0]['tags'] ,list ) == False and isinstance(d[0]['tags'] ,dict ) == False:
+            continue
         tags = d[0]['tags']['tag']
-        for tag in tags:
-            tag_name = tag['content']
-            user_id = tag['author']
+#         print type(tags)
+        """
+            一个坑 ，如果 tag 只有一个 那么 直接是 dict 的类型
+        """
+#         print type(tags)
+        if isinstance(tags ,list):
+            
+            for tag in tags:
+                tag_name = tag['content']
+                user_id = tag['author']
+            
+                if tag_name not in photo_dict[photo_id].taginfo:
+                    photo_dict[photo_id].taginfo[tag_name] = []
+                    photo_dict[photo_id].taginfo[tag_name].append(user_id)
+                if user_id not in user_dict:
+                    user_dict[user_id] = user_info.userData()
+                    user_dict[user_id].id = user_id
+                if tag_name not in user_dict[user_id].taginfo:
+                    user_dict[user_id].taginfo[tag_name] = 0
+                user_dict[user_id].taginfo[tag_name] = user_dict[user_id].taginfo[tag_name] + 1
+        elif isinstance(tags ,dict):
+            tag_name = tags['content']
+            user_id = tags['author']
             
             if tag_name not in photo_dict[photo_id].taginfo:
                 photo_dict[photo_id].taginfo[tag_name] = []
-            photo_dict[photo_id].taginfo[tag_name].append(user_id)
+                photo_dict[photo_id].taginfo[tag_name].append(user_id)
             if user_id not in user_dict:
                 user_dict[user_id] = user_info.userData()
                 user_dict[user_id].id = user_id
@@ -139,10 +179,24 @@ def get_taginfo_by_photo_id_all(user_dict ,photo_dict):
 if __name__  == '__main__':
     
     d = {}
+    dd = {}
+#     get_taginfo_by_photo_id_all(d ,dd)
 #     get_json_flickr_yal_all(d)
 #     get_json_groub_user_id_all(d)
 #     get_photo_id_by_user_id('68701427@N05')
-    tag = get_taginfo_by_photo_id("8747460606")
-    print tag[0]['tags']
-    print len( tag )
+    dd = get_taginfo_by_photo_id("8717078981")
+   
+    print type(dd[0]['tags'] )
+    
+    if isinstance(dd[0]['tags'] ,list ) == False and isinstance(dd[0]['tags'] ,dict ) == False:
+        print "Yes"
+    tags =  dd[0]['tags']['tag']
+    print dd[0]
+    print dd[0]['tags']['tag']
+    print type(tags) 
+#     tags_dict = json.loads(tags)
+    tags_dict = tags
+     
+    print tags['content']
+#     
     print "done it"

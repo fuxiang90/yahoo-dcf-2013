@@ -9,7 +9,9 @@ class userData(object):
         self.id = ""
         self.selfimg = set()
         self.favimg = set()
-        self.taginfo = {}  #记录用户打的标签 和 数目
+        self.taginfo = {}  #记录用户打的标签 和 数目\
+        
+#         self.l = []
 
 
 """

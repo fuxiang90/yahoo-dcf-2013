@@ -1,6 +1,6 @@
 
 #!/usr/bin/python
-# coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 
 
@@ -9,11 +9,14 @@
 import sys
 import json
 import re
+import urllib2
 
 import yql
 import photo
 import user_info
 import yql_function
+
+api_key = "77f1cc3b101c84e5c2694ff1ab73172b"
 
 def get_photo_id_by_user_id(user_dict):
     
@@ -71,7 +74,7 @@ def get_dict(user_dict ,photo_dict):
     json_user = json.loads(f_user.read())
     
     for each_user in json_user:
-        print each_user
+#         print each_user
         id = each_user['user']
         user_dict[id] = user_info.userData()
         user_dict[id].id = id
@@ -81,7 +84,7 @@ def get_dict(user_dict ,photo_dict):
     
         for each in  each_user['favimg']:
             user_dict[id].favimg.add(each)
-        print type (each_user['taginfo'] )
+#         print type (each_user['taginfo'] )
         user_dict[id].taginfo  = each_user['taginfo']
         
 
@@ -99,8 +102,29 @@ def get_dict(user_dict ,photo_dict):
         photo_dict[id].source = each_photo['source']
         photo_dict[id].title = each_photo['title'] 
 
+ 
+
+
+def get_user_love_photo_id(user_id):
+    """
+     http://api.flickr.com/services/rest/?method=flickr.favorites.getPublicList&api_key=da70bd4a798859938ddaa25602b1af33&user_id=9372156%40N04&format=json&nojsoncallback=1
+    """ 
+    query_str =   'http://api.flickr.com/services/rest/?method=flickr.favorites.getPublicList&api_key=' + api_key +'&user_id=' +user_id +'&format=json&nojsoncallback=1'
+#     print query_str
+    html = urllib2.urlopen(query_str).read()
+#     print html
+    json_html = json.loads(html)
+    photo_list = []
+#     print json_html
+    for each in json_html['photos']['photo']:
+#         print each['id']
+        photo_list.append(each['id'])
     
-    
+    return photo_list
+
+def get_user_love_photo_id_all(user_dict  ,photo_dict):
+    for each_user in user_dict:
+        user_dict[each_user].favimg = set ( get_user_love_photo_id(each_user) )
 def main():
     user_dict = {}
     
@@ -118,10 +142,25 @@ def main():
 #     store_dict(user_dict ,photo_dict)
 
 
+# get fal img
+def user_main():
+    user_dict = {}
+     
+    photo_dict = {}
+#     yql_function.get_json_groub_user_id_all(user_dict)
+#     
+# 
+#     yql_function.get_photo_id_by_user_id_all(photo_dict ,user_dict)
+    
+    get_dict(user_dict, photo_dict)
+    
+    get_user_love_photo_id_all(user_dict ,photo_dict)
+    store_dict(user_dict ,photo_dict)
+    
 
 if __name__ == '__main__':
     
-    
-    main()
+    user_main()
+#     main()
     
     print "done it"

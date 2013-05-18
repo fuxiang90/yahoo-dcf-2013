@@ -9,6 +9,8 @@ import json
 import re
 
 import yql
+import photo
+import user_info
 api_key = "77f1cc3b101c84e5c2694ff1ab73172b"
 
 def get_json_flickr_yql(subject ):
@@ -35,7 +37,9 @@ def get_url_photo_id(url_str):
     m = pattern.findall(url_str)
     
     if m :
-        print m
+        return m
+    else :
+        return 0
     
 def get_json_flickr_yal_all(photo_dict ):
     
@@ -44,11 +48,44 @@ def get_json_flickr_yal_all(photo_dict ):
     for subject in subjects:
         d = get_json_flickr_yql(subject)
         
-        get_url_photo_id(d[0]['url'])
+        for each in d:
+            photo_id = get_url_photo_id(each['url'])
+            photo_data  = photo.photoData(each)
+            if photo_id not in photo_dict:
+                photo_dict[photo_id] = photo_data
+            photo_dict.id = photo_id
+                
+                
+
+"""
+通过组 得到一系列的userid 
+SELECT * FROM flickr.groups.pools.photos WHERE group_id='22637658@N00' AND extras='url_sq' and api_key = "77f1cc3b101c84e5c2694ff1ab73172b"
+"""
+def get_json_groub_user_id(groub_str):   
+        
+    query_str =' SELECT * FROM flickr.groups.pools.photos WHERE group_id=@groub AND extras="url_sq" and api_key =@api_key '
+    y = yql.Public() 
+    l = y.execute(query_str , {"groub":groub_str ,"api_key":api_key})
+    
+    print l.rows
+    return l.rows        
+
+def get_json_groub_user_id_all(user_dict):
+    groubs = ['22637658@N00']  
+    for groub in groubs :
+        d =   get_json_groub_user_id(groub)
+        for each in d:
+            user_id = each['owner']
+            if user_id not in user_dict:
+                user_dict[user_id] = user_info.userData()
+                user_dict[user_id] = user_id
+    
         
 if __name__  == '__main__':
     
     d = {}
-    get_json_flickr_yal_all(d)
+#     get_json_flickr_yal_all(d)
+    get_json_groub_user_id_all(d)
     
+    print len(d.keys())
     print "done it"

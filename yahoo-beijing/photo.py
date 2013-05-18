@@ -6,10 +6,11 @@ class photoData(object):
     
     def __init__(self ,d ):
         
-        self.id = 1
-        self.subject = []
-        self.width = 150
-        self.height = 150
-        self.source = ""
+        self.id = 0
+        self.subject = {}
+        self.width = d['width']
+        self.height = d['heigth']
+        self.source = d['source']
+        self.title = ""
         
     

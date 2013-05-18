@@ -106,43 +106,19 @@ def get_photo_id_by_user_id_all(photo_dict ,user_dict):
                 photo_dict[photo_id].source =each['url_sq']
     
 def get_taginfo_by_photo_id(photoid):
-    query_str = 'select * from flickr.photos.info where photo_id=@photoid and api_key = @api_key'
+	query_str = 'select * from flickr.photos.info where photo_id=@photoid and api_key = @api_key'
     y = yql.Public() 
     l = y.execute(query_str , {"photoid":photoid ,"api_key":api_key})
     
-
-    return l.rows  
-
-"""
-这里也把 user 和 photo 的taginfo  赋值
-"""
-def get_taginfo_by_photo_id_all(user_dict ,photo_dict):
-    
-    for photo_id in photo_dict:
-        d = get_taginfo_by_photo_id(photo_id)
-        tags = d[0]['tags']['tag']
-        for tag in tags:
-            tag_name = tag['content']
-            user_id = tag['author']
-            
-            if tag_name not in photo_dict[photo_id].taginfo:
-                photo_dict[photo_id].taginfo[tag_name] = []
-            photo_dict[photo_id].taginfo[tag_name].append(user_id)
-            if user_id not in user_dict:
-                user_dict[user_id] = user_info.userData()
-                user_dict[user_id].id = user_id
-            if tag_name not in user_dict[user_id].taginfo:
-                user_dict[user_id].taginfo[tag_name] = 0
-            user_dict[user_id].taginfo[tag_name] = user_dict[user_id].taginfo[tag_name] + 1
-                 
+#     print l.rows
+    return l.rows   
       
 if __name__  == '__main__':
     
     d = {}
 #     get_json_flickr_yal_all(d)
 #     get_json_groub_user_id_all(d)
-#     get_photo_id_by_user_id('68701427@N05')
-    tag = get_taginfo_by_photo_id("8747460606")
-    print tag[0]['tags']
-    print len( tag )
+    get_photo_id_by_user_id('68701427@N05')
+    
+    print len(d.keys())
     print "done it"

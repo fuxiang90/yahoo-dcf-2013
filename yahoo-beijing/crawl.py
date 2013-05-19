@@ -42,6 +42,9 @@ def store_dict(user_dict ,photo_dict):
             
         d['taginfo'] = user_dict[each_user].taginfo
         
+        d['name'] = user_dict[each_user].name
+        
+        d['source'] = user_dict[each_user].source
         json_user.append(d)
         
     f_user.write(json.dumps(json_user)) 
@@ -86,8 +89,11 @@ def get_dict(user_dict ,photo_dict):
             user_dict[id].favimg.add(each)
 #         print type (each_user['taginfo'] )
         user_dict[id].taginfo  = each_user['taginfo']
-        
-
+        if 'name' in each_user:
+            user_dict[id].name=  each_user['name']
+#             print each_user['name']
+        if 'source' in each_user:
+            user_dict[id].source = each_user['source']
     
     json_photo =  json.loads(f_photo.read())
     for each_photo in json_photo:
@@ -126,16 +132,21 @@ def get_user_love_photo_id_all(user_dict  ,photo_dict):
     
     pos = 0
     for each_user in user_dict:
-        user_dict[each_user].favimg = set ( get_user_love_photo_id(each_user) )
+        l = get_user_love_photo_id(each_user)
+        if len(l) > 10:
+            l = l[:10]
+        user_dict[each_user].favimg = set (l  )
         
         for each_photo_id in user_dict[each_user].favimg:
-            if each_photo_id not in photo_dict:
+            
+#             print "len "+str(len(user_dict[each_user].favimg))
+            if True or each_photo_id not in photo_dict:
                 yql_function.get_photo_info_by_url(each_photo_id , photo_dict)
-        if pos % 1000 == 0:
-            print pos 
-        if pos >= 3000 :
-            continue
-        pos = pos +1
+                if pos % 10 == 0:
+                    print pos 
+                if pos >= 3000 :
+                    continue
+                pos = pos +1
  
 def get_photo_source(photo_dict ,user_dict):
     
@@ -173,10 +184,20 @@ def user_main():
 #     yql_function.get_photo_id_by_user_id_all(photo_dict ,user_dict)
     
     get_dict(user_dict, photo_dict)
+#     count = 0
+#     for each in user_dict:
+#         count = count + len(user_dict[each].favimg)
+#     print count
+#     pass
+#     yql_function.get_json_groub_user_id_all(user_dict)
     
-    get_user_love_photo_id_all(user_dict ,photo_dict)
+#     print user_dict
+#     yql_function.get_photo_id_by_user_id_all(photo_dict ,user_dict)
+#     get_user_love_photo_id_all(user_dict ,photo_dict)
+    print len(user_dict)
+    yql_function.get_all_user_name_info(user_dict)
     
-    get_user_love_photo_id_all(user_dict  ,photo_dict)
+#     get_user_love_photo_id_all(user_dict  ,photo_dict)
     
     store_dict(user_dict ,photo_dict)
     

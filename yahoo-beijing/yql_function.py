@@ -11,6 +11,7 @@ import re
 import yql
 import photo
 import user_info
+import crawl
 api_key = "77f1cc3b101c84e5c2694ff1ab73172b"
 
 def get_json_flickr_yql(subject ):
@@ -204,29 +205,76 @@ def get_photo_info_by_url(photo_id ,photo_dict):
     photo_dict[photo_id].source = json_html['sizes']['size'][1]['source']
     photo_dict[photo_id].width = 150
     photo_dict[photo_id].heigth = 150
+    
+
+def get_all_interest(interest_photo):
+    
+    
+    query = 'http://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key='+api_key+'&format=json&nojsoncallback=1'
+    html = urllib2.urlopen(query).read()
+#     print html
+    json_html = json.loads(html) 
+    l = json_html['photos']['photo']
+    
+    for each in l:
+        id = str(each['id'])
+        interest_photo[id] = photo.photoData()
+        interest_photo[id].id = id
+        source = 'http://farm'+str(each['farm'])+'.staticflickr.com/'+each['server']+'/'+id+'_'+each['secret']+'_q.jpg'
+#         print source
+        interest_photo[id].source = source
+        interest_photo[id].width = 150
+        interest_photo[id].heigth = 150
+        interest_photo[id].title = each['title']
+
+def get_user_name_info(userid):
+    """
+    SELECT * FROM flickr.people.info2 WHERE user_id='51035801340@N01' and api_key = "77f1cc3b101c84e5c2694ff1ab73172b"
+    """
+    query_str = 'SELECT * FROM flickr.people.info2 WHERE user_id=@user_id and api_key =@api_key '
+    y = yql.Public() 
+    l = y.execute(query_str , {"user_id":userid ,"api_key":api_key})
+    
+
+    return l.rows  
+def get_all_user_name_info(user_dict):
+    for user in user_dict :
+        d =  get_user_name_info(user)
+        if len(d) == 0:
+            continue 
+        d = d[0]
+#         print user
+        user_dict[user].name = d['username']
+        user_dict[user].source = d['buddyiconurl']
+        
 if __name__  == '__main__':
     
-    d = {}
-    dd = {}
+    user_dict = {}
+    photo_dict = {}
+    crawl.get_dict(user_dict, photo_dict)
+    get_all_user_name_info(user_dict)
+    crawl.store_dict(user_dict, photo_dict)
+    
+#     get_all_interest()
 #     get_taginfo_by_photo_id_all(d ,dd)
 #     get_json_flickr_yal_all(d)
 #     get_json_groub_user_id_all(d)
 #     get_photo_id_by_user_id('68701427@N05')
-
-    get_photo_info_by_url('8670010354',d)
-    dd = get_taginfo_by_photo_id("8717078981")
-   
-    print type(dd[0]['tags'] )
-    
-    if isinstance(dd[0]['tags'] ,list ) == False and isinstance(dd[0]['tags'] ,dict ) == False:
-        print "Yes"
-    tags =  dd[0]['tags']['tag']
-    print dd[0]
-    print dd[0]['tags']['tag']
-    print type(tags) 
-#     tags_dict = json.loads(tags)
-    tags_dict = tags
-     
-    print tags['content']
+# 
+#     get_photo_info_by_url('8670010354',d)
+#     dd = get_taginfo_by_photo_id("8717078981")
+#    
+#     print type(dd[0]['tags'] )
+#     
+#     if isinstance(dd[0]['tags'] ,list ) == False and isinstance(dd[0]['tags'] ,dict ) == False:
+#         print "Yes"
+#     tags =  dd[0]['tags']['tag']
+#     print dd[0]
+#     print dd[0]['tags']['tag']
+#     print type(tags) 
+# #     tags_dict = json.loads(tags)
+#     tags_dict = tags
+#      
+#     print tags['content']
 #     
     print "done it"

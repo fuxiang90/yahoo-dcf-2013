@@ -4,9 +4,14 @@
 
 dcf 是队名 分别代表三位队友名字的首字母
 
-d : 
-c :
-f :www.fuxiang90.com
+d : djy1989418@gmail.com     
+c : maverick19900122@gmail.com     
+f : fuxiang90@gmail.com
 
 ### yahoo hack 2013
 
+* yql 
+* ydl 
+* zeromq
+* ios 开发
+* 推荐

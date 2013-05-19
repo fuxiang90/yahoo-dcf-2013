@@ -10,6 +10,8 @@ class userData(object):
         self.selfimg = set()
         self.favimg = set()
         self.taginfo = {}  #记录用户打的标签 和 数目\
+        self.name = ""
+        self.source = ""
         
 #         self.l = []
 

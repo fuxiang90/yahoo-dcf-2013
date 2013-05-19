@@ -173,27 +173,15 @@ def main():
 #     store_dict(user_dict ,photo_dict)
 
 
-# get fal img
+
 def user_main():
     user_dict = {}
      
     photo_dict = {}
-#     yql_function.get_json_groub_user_id_all(user_dict)
-#     
-# 
-#     yql_function.get_photo_id_by_user_id_all(photo_dict ,user_dict)
+
     
     get_dict(user_dict, photo_dict)
-#     count = 0
-#     for each in user_dict:
-#         count = count + len(user_dict[each].favimg)
-#     print count
-#     pass
-#     yql_function.get_json_groub_user_id_all(user_dict)
-    
-#     print user_dict
-#     yql_function.get_photo_id_by_user_id_all(photo_dict ,user_dict)
-#     get_user_love_photo_id_all(user_dict ,photo_dict)
+
     print len(user_dict)
     yql_function.get_all_user_name_info(user_dict)
     
